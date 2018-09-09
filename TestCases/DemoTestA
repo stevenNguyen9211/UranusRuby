@@ -1,0 +1,33 @@
+require 'watir'
+require 'rspec'
+
+include RSpec::Matchers
+
+argsChrome = ['--start-maximized']
+browser = Watir::Browser.new :chrome, options:{args: argsChrome}
+browser.goto 'http://demo.nopcommerce.com/'
+
+browser.element(xpath: "//*[contains(@href,'/login')]").click
+
+sleep(2)
+
+browser.element(id: 'Email').send_keys 'seven_03092018_02@yopmail.fr'
+browser.element(id: 'Password').send_keys 'passwd123'
+browser.element(xpath: "//*[contains(@class,'login-button')]").click
+
+lnk_Login = browser.element(xpath: "//*[contains(@href,'/logout')]")
+
+sleep(1)
+
+wait = Selenium::WebDriver::Wait.new(:timeout => 10)
+
+wait.until{lnk_Login.present?}
+
+if lnk_Login.present?
+  puts 'Verify the link Logout is displayed after user logged in successfully'
+end
+getTextLoginLink = lnk_Login.text
+puts getTextLoginLink
+expect(getTextLoginLink).to eql("Run your first Selenium Test")
+
+browser.close
